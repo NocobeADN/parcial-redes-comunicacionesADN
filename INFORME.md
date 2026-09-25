@@ -501,8 +501,8 @@ Petición: el navegador pide `http://localhost/index.php/component/content/artic
 ### 3.0 Despliegue
 
 ```bash
-git clone <URL_DEL_REPOSITORIO>
-cd parcial-redes-comunicaciones
+git clone https://github.com/NocobeADN/parcial-redes-comunicacionesADN.git
+cd parcial-redes-comunicacionesADN
 cp .env.example .env
 docker compose up -d
 docker compose ps
@@ -570,7 +570,7 @@ La primera debe responder `"database":"ok"`; la segunda, `"Database Connection O
 
 ```bash
 # Redes, IPs, MACs y bridges
-docker network inspect parcial-redes-comunicaciones_backend_net
+docker network inspect $(docker network ls -q -f name=backend_net)
 
 # DNS embebido y aislamiento
 docker compose exec joomla getent hosts database   # resuelve 10.201.20.x

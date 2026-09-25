@@ -25,8 +25,8 @@ El documento técnico completo (topología, mecanismo de logs y análisis OSI) e
 ## Arranque (un solo paso)
 
 ```bash
-git clone <URL_DEL_REPOSITORIO>
-cd parcial-redes-comunicaciones
+git clone https://github.com/NocobeADN/parcial-redes-comunicacionesADN.git
+cd parcial-redes-comunicacionesADN
 cp .env.example .env
 docker compose up -d
 ```
@@ -67,7 +67,7 @@ La guía detallada paso a paso está en la sección 3 de [INFORME.md](INFORME.md
 ## Estructura del repositorio
 
 ```
-parcial-redes-comunicaciones/
+parcial-redes-comunicacionesADN/
 ├── docker-compose.yml          # Orquestación de los 5 servicios, 2 redes y 5 volúmenes
 ├── .env.example                # Variables/credenciales por defecto
 ├── README.md                   # Este archivo
