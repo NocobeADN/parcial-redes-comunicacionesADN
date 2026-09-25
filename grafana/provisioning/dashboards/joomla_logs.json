@@ -1,0 +1,1142 @@
+{
+  "uid": "parcial-joomla-logs",
+  "title": "Parcial Comunicaciones - Tráfico Joomla y PostgreSQL",
+  "description": "Tráfico HTTP (Nginx/Apache) y actividad del CMS, leídos desde PostgreSQL (file_fdw).",
+  "tags": [
+    "parcial",
+    "nginx",
+    "joomla",
+    "postgresql",
+    "osi"
+  ],
+  "timezone": "browser",
+  "editable": false,
+  "graphTooltip": 1,
+  "refresh": "10s",
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m"
+    ]
+  },
+  "schemaVersion": 41,
+  "version": 1,
+  "templating": {
+    "list": [
+      {
+        "name": "servicio",
+        "label": "Servicio",
+        "type": "custom",
+        "query": "joomla,jupyter,grafana",
+        "multi": true,
+        "includeAll": true,
+        "current": {
+          "selected": true,
+          "text": [
+            "joomla"
+          ],
+          "value": [
+            "joomla"
+          ]
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "joomla",
+            "value": "joomla"
+          },
+          {
+            "selected": false,
+            "text": "jupyter",
+            "value": "jupyter"
+          },
+          {
+            "selected": false,
+            "text": "grafana",
+            "value": "grafana"
+          }
+        ],
+        "hide": 0
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [
+    {
+      "title": "Portal Joomla",
+      "type": "link",
+      "url": "/",
+      "targetBlank": true,
+      "icon": "external link"
+    },
+    {
+      "title": "JupyterLab",
+      "type": "link",
+      "url": "/jupyter/",
+      "targetBlank": true,
+      "icon": "external link"
+    }
+  ],
+  "panels": [
+    {
+      "id": 1,
+      "type": "row",
+      "title": "Resumen del tráfico HTTP (log de acceso de Nginx)",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": []
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Peticiones",
+      "description": "Total de peticiones HTTP registradas por Nginx para los servicios seleccionados.",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "textMode": "value",
+        "orientation": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT count(*) AS \"Peticiones\" FROM monitoreo.v_nginx_accesos WHERE $__timeFilter(ts) AND servicio IN ($servicio)"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Errores 4xx+5xx",
+      "description": "",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "textMode": "value",
+        "orientation": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COALESCE(100.0 * count(*) FILTER (WHERE estado >= 400) / NULLIF(count(*), 0), 0) AS \"Errores\" FROM monitoreo.v_nginx_accesos WHERE $__timeFilter(ts) AND servicio IN ($servicio)"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "IPs distintas",
+      "description": "",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "purple",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "textMode": "value",
+        "orientation": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT count(DISTINCT ip_origen) AS \"IPs\" FROM monitoreo.v_nginx_accesos WHERE $__timeFilter(ts) AND servicio IN ($servicio)"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Latencia p95",
+      "description": "Percentil 95 de $request_time (desde el primer byte del cliente hasta el último byte enviado).",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.5
+              },
+              {
+                "color": "red",
+                "value": 1.5
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "textMode": "value",
+        "orientation": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COALESCE(percentile_cont(0.95) WITHIN GROUP (ORDER BY tiempo_total_s), 0) AS \"p95\" FROM monitoreo.v_nginx_accesos WHERE $__timeFilter(ts) AND servicio IN ($servicio)"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Reuso keep-alive",
+      "description": "Capa 4: % de peticiones proxificadas cuyo $upstream_connect_time fue 0, es decir, que reutilizaron una conexión TCP ya abierta del pool keepalive (sin three-way handshake).",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "teal",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "textMode": "value",
+        "orientation": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COALESCE(100.0 * count(*) FILTER (WHERE upstream_connect_s = 0) / NULLIF(count(*) FILTER (WHERE upstream_connect_s IS NOT NULL), 0), 0) AS \"Reutilización\" FROM monitoreo.v_nginx_accesos WHERE $__timeFilter(ts) AND servicio IN ($servicio)"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Conexiones a PG",
+      "description": "Sesiones cliente abiertas contra database:5432 (pg_stat_activity).",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "textMode": "value",
+        "orientation": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT count(*) AS \"Conexiones\" FROM monitoreo.v_conexiones_pg"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Peticiones por minuto según código HTTP",
+      "description": "Volumen de peticiones agrupado por minuto y por código de estado HTTP (200, 301/303, 404...).",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "interval": "30s",
+      "gridPos": {
+        "h": 9,
+        "w": 16,
+        "x": 0,
+        "y": 5
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 2,
+            "fillOpacity": 60,
+            "pointSize": 4,
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "axisPlacement": "auto",
+            "barAlignment": 0
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT $__timeGroupAlias(ts, $__interval, 0), estado::text AS metric, count(*) AS value FROM monitoreo.v_nginx_accesos WHERE $__timeFilter(ts) AND servicio IN ($servicio) GROUP BY 1, 2 ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "piechart",
+      "title": "Distribución de códigos HTTP",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 5
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "pieType": "donut",
+        "displayLabels": [
+          "name",
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT estado::text AS \"Código\", count(*) AS \"Peticiones\" FROM monitoreo.v_nginx_accesos WHERE $__timeFilter(ts) AND servicio IN ($servicio) GROUP BY 1 ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "row",
+      "title": "Clientes, rutas y servicios",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "panels": []
+    },
+    {
+      "id": 11,
+      "type": "bargauge",
+      "title": "Top 10 IPs recurrentes",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "description": "IP de la conexión TCP que llega a Nginx ($remote_addr). Con Docker Desktop / docker-proxy las peticiones desde el propio host aparecen con la IP del gateway del bridge (NAT).",
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 0,
+        "y": 15
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "continuous-BlPu"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "top",
+        "sizing": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT ip_origen AS \"IP\", count(*) AS \"Peticiones\" FROM monitoreo.v_nginx_accesos WHERE $__timeFilter(ts) AND servicio IN ($servicio) GROUP BY 1 ORDER BY 2 DESC LIMIT 10"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "type": "table",
+      "title": "Rutas más solicitadas",
+      "description": "",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 16,
+        "x": 8,
+        "y": 15
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Ruta"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 430
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT ruta AS \"Ruta\", count(*) AS \"Peticiones\", string_agg(DISTINCT estado::text, ', ') AS \"Códigos\", round(avg(tiempo_total_s) * 1000, 1) AS \"Latencia media (ms)\", pg_size_pretty(sum(bytes)) AS \"Bytes enviados\" FROM monitoreo.v_nginx_accesos WHERE $__timeFilter(ts) AND servicio IN ($servicio) GROUP BY 1 ORDER BY 2 DESC LIMIT 15"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Peticiones por servicio (enrutamiento por prefijo)",
+      "description": "Cómo reparte Nginx el tráfico: / -> joomla, /jupyter/ -> jupyter, /grafana/ -> grafana (incluye todos los servicios).",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "interval": "30s",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 2,
+            "fillOpacity": 60,
+            "pointSize": 4,
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "axisPlacement": "auto",
+            "barAlignment": 0
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT $__timeGroupAlias(ts, $__interval, 0), servicio AS metric, count(*) AS value FROM monitoreo.v_nginx_accesos WHERE $__timeFilter(ts) GROUP BY 1, 2 ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "Latencia media: total vs. backend vs. conexión TCP",
+      "description": "",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "interval": "30s",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "pointSize": 4,
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto",
+            "barAlignment": 0
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT $__timeGroupAlias(ts, $__interval), avg(tiempo_total_s) AS \"Total en Nginx\", avg(upstream_tiempo_s) AS \"Respuesta del backend\", avg(upstream_connect_s) AS \"Establecimiento TCP al backend\" FROM monitoreo.v_nginx_accesos WHERE $__timeFilter(ts) AND servicio IN ($servicio) GROUP BY 1 ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "type": "row",
+      "title": "Actividad de Joomla y PostgreSQL",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      },
+      "panels": []
+    },
+    {
+      "id": 16,
+      "type": "table",
+      "title": "Registro de actividad de Joomla (#__action_logs)",
+      "description": "Eventos registrados por el plugin Action Log de Joomla (inicios de sesión, ediciones, etc.).",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 33
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT fecha AS \"Fecha\", usuario AS \"Usuario\", accion AS \"Acción\", extension AS \"Extensión\", ip AS \"IP\" FROM monitoreo.v_actividad_joomla ORDER BY fecha DESC LIMIT 50"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "type": "bargauge",
+      "title": "Artículos más visitados (hits en PostgreSQL)",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 6,
+        "x": 12,
+        "y": 33
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "orientation": "horizontal",
+        "displayMode": "basic",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "top",
+        "sizing": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT titulo AS \"Artículo\", hits AS \"Visitas\" FROM monitoreo.v_articulos_joomla WHERE publicado ORDER BY hits DESC LIMIT 10"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "type": "piechart",
+      "title": "Sesiones de Joomla (#__session)",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 6,
+        "x": 18,
+        "y": 33
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "pieType": "pie",
+        "displayLabels": [
+          "value"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT cliente || ' / ' || tipo AS \"Sesión\", count(*) AS \"Sesiones\" FROM monitoreo.v_sesiones_joomla GROUP BY 1 ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "type": "table",
+      "title": "Conexiones TCP activas a PostgreSQL (pg_stat_activity)",
+      "description": "Capa 3/4: cada fila es una conexión TCP a database:5432 desde una IP de backend_net y un puerto efímero.",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 10,
+        "x": 0,
+        "y": 42
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT usuario AS \"Usuario BD\", aplicacion AS \"Aplicación\", ip_cliente AS \"IP cliente\", puerto_cliente AS \"Puerto efímero\", estado AS \"Estado\", inicio_conexion AS \"Conectado desde\" FROM monitoreo.v_conexiones_pg ORDER BY inicio_conexion"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "type": "table",
+      "title": "Últimas peticiones vistas por Apache dentro de Joomla",
+      "description": "Log de Apache exportado por el contenedor Joomla (volumen joomla_logs). mod_remoteip reconstruye la IP del cliente a partir de X-Forwarded-For; la IP del par TCP es la de Nginx en frontend_net.",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "pg-parcial"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 14,
+        "x": 10,
+        "y": 42
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "pg-parcial"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT ts AS \"Fecha\", ip_cliente AS \"IP cliente (X-Forwarded-For)\", ip_par_tcp AS \"IP par TCP (nginx)\", x_forwarded_proto AS \"X-Forwarded-Proto\", metodo AS \"Método\", ruta AS \"Ruta\", estado AS \"Código\", duracion_ms AS \"Duración (ms)\", peticiones_keepalive AS \"Reusos keep-alive\" FROM monitoreo.v_joomla_apache WHERE $__timeFilter(ts) ORDER BY ts DESC LIMIT 25"
+        }
+      ]
+    }
+  ]
+}

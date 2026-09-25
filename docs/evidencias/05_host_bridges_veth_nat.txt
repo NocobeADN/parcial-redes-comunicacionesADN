@@ -1,0 +1,40 @@
+### Bridges Linux creados por Docker
+br-parcial-be    UP             b2:b4:e6:84:d7:e2 <BROADCAST,MULTICAST,UP,LOWER_UP> 
+br-parcial-fe    UP             e2:ac:e4:80:ae:6d <BROADCAST,MULTICAST,UP,LOWER_UP> 
+### Interfaces veth esclavas de cada bridge (peer_ifindex = eth dentro del contenedor)
+br-parcial-fe:
+   veth01fd1bb  ifindex=119  peer_ifindex=3  mac=26:19:17:98:90:32
+   veth4af2453  ifindex=117  peer_ifindex=3  mac=6a:61:08:05:db:1e
+   veth85e8a6e  ifindex=131  peer_ifindex=2  mac=32:5a:f8:ca:26:31
+   vethd3fc0aa  ifindex=122  peer_ifindex=2  mac=0a:c7:92:d0:46:ac
+br-parcial-be:
+   veth315d15b  ifindex=118  peer_ifindex=2  mac=9a:1d:df:83:85:11
+   veth7016047  ifindex=132  peer_ifindex=3  mac=82:4a:0d:d7:61:8a
+   veth7459996  ifindex=115  peer_ifindex=2  mac=0a:a3:60:c5:9c:56
+   veth8e98023  ifindex=116  peer_ifindex=2  mac=3e:ea:10:a1:86:3e
+### IP de los bridges (gateway de cada red)
+br-parcial-fe    UP             10.201.10.1/24 fe80::e0ac:e4ff:fe80:ae6d/64 
+br-parcial-be    UP             10.201.20.1/24 fe80::b0b4:e6ff:fe84:d7e2/64 
+### Reenvío IP del kernel (net.ipv4.ip_forward)
+1
+### Tabla FDB (MAC -> puerto veth) aprendida por br-parcial-be
+a6:29:d4:71:bf:74 dev veth7459996 master br-parcial-be 
+7a:fb:eb:32:ad:8d dev veth8e98023 master br-parcial-be 
+ea:fb:53:90:78:42 dev veth315d15b master br-parcial-be 
+1e:7e:39:57:65:39 dev veth7016047 master br-parcial-be 
+### Reglas NAT (tabla nat)
+:DOCKER - [0:0]
+-A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER
+-A OUTPUT -m addrtype --dst-type LOCAL -j DOCKER
+-A POSTROUTING -s 10.201.10.0/24 ! -o br-parcial-fe -j MASQUERADE
+-A POSTROUTING -s 10.201.10.5/32 -d 10.201.10.5/32 -p tcp -m tcp --dport 80 -j MASQUERADE
+-A DOCKER -p tcp -m tcp --dport 80 -j DNAT --to-destination 10.201.10.5:80
+### Reglas de filtrado/aislamiento relacionadas
+-A DOCKER -d 10.201.10.5/32 ! -i br-parcial-fe -o br-parcial-fe -p tcp -m tcp --dport 80 -j ACCEPT
+-A DOCKER ! -i br-parcial-fe -o br-parcial-fe -j DROP
+-A DOCKER-BRIDGE -o br-parcial-fe -j DOCKER
+-A DOCKER-CT -o br-parcial-fe -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A DOCKER-FORWARD -i br-parcial-be -o br-parcial-be -j ACCEPT
+-A DOCKER-FORWARD -i br-parcial-fe -j ACCEPT
+-A DOCKER-INTERNAL ! -s 10.201.20.0/24 -o br-parcial-be -j DROP
+-A DOCKER-INTERNAL ! -d 10.201.20.0/24 -i br-parcial-be -j DROP

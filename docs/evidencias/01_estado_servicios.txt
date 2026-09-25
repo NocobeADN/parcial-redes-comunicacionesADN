@@ -1,0 +1,6 @@
+SERVICE    IMAGE                                STATUS                        PORTS
+database   postgres:16-alpine                   Up 6 minutes (healthy)        5432/tcp
+grafana    grafana/grafana:13.2.2               Up 6 minutes (healthy)        3000/tcp
+joomla     joomla:6.1.3-php8.4-apache           Up About a minute (healthy)   80/tcp
+jupyter    parcial-comunicaciones/jupyter:1.0   Up 6 minutes (healthy)        8888/tcp
+nginx      nginx:1.31-alpine                    Up 6 minutes (healthy)        0.0.0.0:80->80/tcp, [::]:80->80/tcp

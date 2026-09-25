@@ -1,0 +1,16 @@
+# =====================================================================
+#  Proveedor de dashboards: carga todos los JSON de esta carpeta al arrancar.
+# =====================================================================
+apiVersion: 1
+
+providers:
+  - name: parcial-comunicaciones
+    orgId: 1
+    folder: Parcial Comunicaciones
+    type: file
+    disableDeletion: true
+    allowUiUpdates: false
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards
+      foldersFromFilesStructure: false

@@ -1,0 +1,14 @@
+# Credenciales locales (se generan con: cp .env.example .env)
+.env
+
+# Artefactos de Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.virtual_documents/
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

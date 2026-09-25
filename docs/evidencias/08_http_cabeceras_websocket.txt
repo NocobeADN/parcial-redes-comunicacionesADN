@@ -1,0 +1,41 @@
+### Handshake WebSocket a través de Nginx (HTTP/1.1 Upgrade -> 101)
+HTTP/1.1 101 Switching Protocols
+Server: nginx/1.31.6
+Date: Fri, 25 Sep 2026 16:31:32 GMT
+Connection: upgrade
+X-Content-Type-Options: nosniff
+Content-Security-Policy: frame-ancestors 'self'; report-uri /jupyter/api/security/csp-report
+Access-Control-Allow-Origin: 
+Upgrade: websocket
+Sec-Websocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
+Set-Cookie: username-localhost="2|1:0|10:1790353892|18:username-localhost|228:eyJ1c2VybmFtZSI6ICI1OThjZDNmOWE0Njg0MzBkOTExOThjM2E5NWZmNTVlZCIsICJuYW1lIjogIkFub255bW91cyBWYWxldHVkbyIsICJkaXNwbGF5X25hbWUiOiAiQW5vbnltb3VzIFZhbGV0dWRvIiwgImluaXRpYWxzIjogIkFWIiwgImNvbG9yIjogbnVsbCwgImF2YXRhcl91cmwiOiBudWxsfQ==|612579618d9d6bf9e9effa622a99996e078af58b7689b7fbbb2b5a06f43cb836"; expires=Sun, 25 Oct 2026 16:31:32 GMT; HttpOnly; Path=/jupyter/
+
+
+### Respuesta del portal (cabeceras) a través de Nginx
+HTTP/1.1 200 OK
+Server: nginx/1.31.6
+Date: Fri, 25 Sep 2026 16:31:35 GMT
+Content-Type: text/html; charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+X-Powered-By: PHP/8.4.26
+Set-Cookie: 90e70745a51674c873a9b68922d4e283=36e0fbf0e670d5b63ef656fae67cde49; path=/; HttpOnly
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+cross-origin-opener-policy: same-origin
+Expires: Wed, 17 Aug 2005 00:00:00 GMT
+Last-Modified: Fri, 25 Sep 2026 16:31:35 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+Vary: Accept-Encoding
+
+### Keep-alive cliente: 3 peticiones sobre la MISMA conexión TCP
+
+< HTTP/1.1 200 OK
+* Connection #0 to host localhost:80 left intact
+< HTTP/1.1 200 OK
+* Connection #0 to host localhost:80 left intact
+< HTTP/1.1 200 OK
+* Connection #0 to host localhost:80 left intact
+
+

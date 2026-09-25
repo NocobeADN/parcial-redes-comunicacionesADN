@@ -1,0 +1,12 @@
+RED parcial-redes-comunicaciones_frontend_net  driver=bridge  internal=False  subnet=10.201.10.0/24  gateway=10.201.10.1  bridge=br-parcial-fe
+   parcial-redes-comunicaciones-jupyter-1     10.201.10.3/24   fa:5c:49:08:c9:fc
+   parcial-redes-comunicaciones-nginx-1       10.201.10.5/24   ce:88:af:0f:f5:94
+   parcial-redes-comunicaciones-joomla-1      10.201.10.4/24   6e:f8:da:35:b7:12
+   parcial-redes-comunicaciones-grafana-1     10.201.10.2/24   56:98:35:52:ed:7f
+
+RED parcial-redes-comunicaciones_backend_net  driver=bridge  internal=True  subnet=10.201.20.0/24  gateway=10.201.20.1  bridge=br-parcial-be
+   parcial-redes-comunicaciones-database-1    10.201.20.2/24   a6:29:d4:71:bf:74
+   parcial-redes-comunicaciones-jupyter-1     10.201.20.4/24   ea:fb:53:90:78:42
+   parcial-redes-comunicaciones-joomla-1      10.201.20.5/24   1e:7e:39:57:65:39
+   parcial-redes-comunicaciones-grafana-1     10.201.20.3/24   7a:fb:eb:32:ad:8d
+

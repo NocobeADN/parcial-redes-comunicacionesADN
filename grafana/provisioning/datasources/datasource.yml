@@ -1,0 +1,33 @@
+# =====================================================================
+#  Datasource aprovisionado automáticamente al arrancar Grafana.
+#  PostgreSQL (servicio "database" en backend_net, TCP/5432) con un usuario de
+#  SOLO LECTURA que únicamente ve el esquema "monitoreo" (logs de Nginx y
+#  Apache/Joomla expuestos con file_fdw + actividad del CMS).
+#  Las credenciales se inyectan desde variables de entorno ($VAR).
+# =====================================================================
+apiVersion: 1
+
+deleteDatasources:
+  - name: PostgreSQL-Parcial
+    orgId: 1
+
+datasources:
+  - name: PostgreSQL-Parcial
+    uid: pg-parcial
+    type: grafana-postgresql-datasource
+    access: proxy
+    orgId: 1
+    url: database:5432
+    user: $GRAFANA_DB_USER
+    isDefault: true
+    editable: false
+    jsonData:
+      database: $GRAFANA_DB_NAME
+      sslmode: disable
+      postgresVersion: 1600
+      timescaledb: false
+      maxOpenConns: 10
+      maxIdleConns: 5
+      connMaxLifetime: 14400
+    secureJsonData:
+      password: $GRAFANA_DB_PASSWORD

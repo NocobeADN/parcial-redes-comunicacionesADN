@@ -1,0 +1,6 @@
+# Fuerza finales de línea LF en todo el repositorio.
+# Imprescindible si el repo se clona en Windows con core.autocrlf=true:
+# un script .sh con CRLF falla dentro de los contenedores Linux ("$'\r': command not found").
+* text=auto eol=lf
+*.png binary
+*.jpg binary

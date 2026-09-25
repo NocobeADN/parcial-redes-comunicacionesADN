@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/>
+    </marker>
+    <marker id="flv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9a3412"/>
+    </marker>
+    <style>
+      .t  { font-size: 13px; fill: #1f2937; }
+      .ts { font-size: 11.5px; fill: #374151; }
+      .tb { font-size: 16px; font-weight: 700; fill: #111827; }
+      .tn { font-size: 13px; font-weight: 600; }
+      .mono { font-family: Consolas, "DejaVu Sans Mono", monospace; font-size: 11.5px; fill: #1f2937; }
+      .caja { fill: #ffffff; stroke: #374151; stroke-width: 1.5; }
+      .flujo { stroke: #1f2937; stroke-width: 2; fill: none; }
+      .flujoBD { stroke: #9a3412; stroke-width: 2; fill: none; }
+      .vol { fill: #f5f3ff; stroke: #6d28d9; stroke-width: 1.2; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="900" fill="#ffffff"/>
+  <text x="600" y="30" text-anchor="middle" class="tb" font-size="19">Arquitectura del clúster: 5 contenedores, 2 redes bridge, 1 único puerto publicado</text>
+
+  <!-- Cliente -->
+  <rect x="70" y="50" width="220" height="58" rx="8" fill="#ecfdf5" stroke="#047857" stroke-width="1.5"/>
+  <text x="180" y="74" text-anchor="middle" class="tn" fill="#065f46">Cliente (navegador)</text>
+  <text x="180" y="94" text-anchor="middle" class="mono">http://localhost:80</text>
+
+  <!-- Host -->
+  <rect x="20" y="130" width="1160" height="755" rx="12" fill="#f9fafb" stroke="#6b7280" stroke-dasharray="6 4"/>
+  <text x="1165" y="150" text-anchor="end" class="ts">Host Docker (kernel Linux: net.ipv4.ip_forward=1, iptables/nftables DNAT + MASQUERADE)</text>
+
+
+  <!-- frontend_net -->
+  <rect x="40" y="185" width="1120" height="265" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="400" y="204" class="tn" fill="#1d4ed8">frontend_net · bridge br-parcial-fe · 10.201.10.0/24 · gateway 10.201.10.1</text>
+
+  <!-- backend_net -->
+  <rect x="40" y="470" width="1120" height="215" rx="10" fill="#fff7ed" stroke="#c2410c" stroke-width="1.5"/>
+  <text x="52" y="489" class="tn" fill="#9a3412">backend_net · br-parcial-be · 10.201.20.0/24</text>
+  <text x="52" y="505" class="ts" fill="#9a3412">internal: true (sin gateway ni NAT)</text>
+
+  <!-- Flujo cliente -> nginx -->
+  <line x1="180" y1="108" x2="180" y2="238" class="flujo" marker-end="url(#fl)"/>
+  <rect x="190" y="150" width="190" height="22" rx="4" fill="#f9fafb"/>
+  <text x="195" y="165" class="ts">DNAT tcp/80 → 10.201.10.5:80</text>
+  <!-- nginx -->
+  <rect x="80" y="240" width="200" height="160" rx="8" class="caja"/>
+  <text x="180" y="264" text-anchor="middle" class="tb">nginx</text>
+  <text x="180" y="283" text-anchor="middle" class="ts">nginx:1.31-alpine</text>
+  <text x="180" y="304" text-anchor="middle" class="mono">escucha TCP :80</text>
+  <text x="180" y="322" text-anchor="middle" class="mono">publicado 80:80</text>
+  <text x="180" y="346" text-anchor="middle" class="ts">proxy inverso · WebSocket</text>
+  <text x="180" y="363" text-anchor="middle" class="ts">log de accesos TSV</text>
+  <text x="180" y="388" text-anchor="middle" class="mono">eth0 10.201.10.5</text>
+
+  <!-- joomla -->
+  <rect x="360" y="240" width="200" height="405" rx="8" class="caja"/>
+  <text x="460" y="264" text-anchor="middle" class="tb">joomla</text>
+  <text x="460" y="283" text-anchor="middle" class="ts">joomla:6.1.3-php8.4-apache</text>
+  <text x="460" y="304" text-anchor="middle" class="mono">Apache TCP :80</text>
+  <text x="460" y="328" text-anchor="middle" class="ts">CMS (PHP 8.4)</text>
+  <text x="460" y="345" text-anchor="middle" class="ts">mod_remoteip (X-Forwarded-For)</text>
+  <text x="460" y="362" text-anchor="middle" class="ts">log Apache TSV → volumen</text>
+  <text x="460" y="388" text-anchor="middle" class="mono">eth0 10.201.10.4</text>
+  <text x="460" y="630" text-anchor="middle" class="mono">eth1 10.201.20.5</text>
+
+  <!-- jupyter -->
+  <rect x="640" y="240" width="200" height="405" rx="8" class="caja"/>
+  <text x="740" y="264" text-anchor="middle" class="tb">jupyter</text>
+  <text x="740" y="283" text-anchor="middle" class="ts">minimal-notebook + psycopg2</text>
+  <text x="740" y="304" text-anchor="middle" class="mono">JupyterLab TCP :8888</text>
+  <text x="740" y="328" text-anchor="middle" class="ts">base_url /jupyter/</text>
+  <text x="740" y="345" text-anchor="middle" class="ts">analisis_datos.ipynb</text>
+  <text x="740" y="362" text-anchor="middle" class="ts">(bind-mount precargado)</text>
+  <text x="740" y="388" text-anchor="middle" class="mono">eth0 10.201.10.3</text>
+  <text x="740" y="630" text-anchor="middle" class="mono">eth1 10.201.20.4</text>
+
+  <!-- grafana -->
+  <rect x="920" y="240" width="200" height="405" rx="8" class="caja"/>
+  <text x="1020" y="264" text-anchor="middle" class="tb">grafana</text>
+  <text x="1020" y="283" text-anchor="middle" class="ts">grafana/grafana:13.2.2</text>
+  <text x="1020" y="304" text-anchor="middle" class="mono">Grafana TCP :3000</text>
+  <text x="1020" y="328" text-anchor="middle" class="ts">serve_from_sub_path /grafana/</text>
+  <text x="1020" y="345" text-anchor="middle" class="ts">provisioning: datasource</text>
+  <text x="1020" y="362" text-anchor="middle" class="ts">+ dashboard (YAML/JSON)</text>
+  <text x="1020" y="388" text-anchor="middle" class="mono">eth0 10.201.10.2</text>
+  <text x="1020" y="630" text-anchor="middle" class="mono">eth1 10.201.20.3</text>
+
+  <!-- database -->
+  <rect x="80" y="515" width="200" height="130" rx="8" class="caja"/>
+  <text x="180" y="538" text-anchor="middle" class="tb">database</text>
+  <text x="180" y="556" text-anchor="middle" class="ts">postgres:16-alpine</text>
+  <text x="180" y="576" text-anchor="middle" class="mono">PostgreSQL TCP :5432</text>
+  <text x="180" y="596" text-anchor="middle" class="ts">file_fdw → esquema monitoreo</text>
+  <text x="180" y="630" text-anchor="middle" class="mono">eth0 10.201.20.2</text>
+
+  <!-- flujos HTTP nginx -> backends -->
+  <line x1="280" y1="300" x2="358" y2="300" class="flujo" marker-end="url(#fl)"/>
+  <text x="284" y="292" class="ts">HTTP/1.1</text>
+  <text x="284" y="318" class="ts">keep-alive</text>
+  <polyline points="260,240 260,222 740,222 740,238" class="flujo" marker-end="url(#fl)"/>
+  <polyline points="740,222 1020,222 1020,238" class="flujo" marker-end="url(#fl)"/>
+  <text x="548" y="236" class="ts">/jupyter/ → :8888 (HTTP + WS)</text>
+  <text x="870" y="236" class="ts">/grafana/ → :3000</text>
+  <text x="300" y="236" class="ts">/ → joomla:80</text>
+
+  <!-- flujos a PostgreSQL (bus backend) -->
+  <polyline points="460,645 460,665 180,665 180,647" class="flujoBD" marker-end="url(#flv)"/>
+  <polyline points="740,645 740,665 460,665" class="flujoBD"/>
+  <polyline points="1020,645 1020,665 740,665" class="flujoBD"/>
+  <text x="560" y="680" class="ts" fill="#9a3412">TCP 5432 · protocolo cliente/servidor PostgreSQL v3 (SCRAM-SHA-256)</text>
+
+  <!-- volúmenes -->
+  <text x="40" y="712" class="tn" fill="#5b21b6">Volúmenes nombrados y bind-mounts (datos compartidos fuera de la red)</text>
+  <rect x="40"  y="722" width="265" height="70" rx="6" class="vol"/>
+  <text x="52" y="742" class="mono">nginx_logs</text>
+  <text x="52" y="760" class="ts">nginx (rw) → database, jupyter (ro)</text>
+  <text x="52" y="777" class="ts">access.log TSV → file_fdw</text>
+
+  <rect x="320" y="722" width="265" height="70" rx="6" class="vol"/>
+  <text x="332" y="742" class="mono">joomla_logs</text>
+  <text x="332" y="760" class="ts">joomla/Apache (rw) → database, jupyter (ro)</text>
+  <text x="332" y="777" class="ts">apache_access.log TSV → file_fdw</text>
+
+  <rect x="600" y="722" width="265" height="70" rx="6" class="vol"/>
+  <text x="612" y="742" class="mono">pg_data · joomla_data · grafana_data</text>
+  <text x="612" y="760" class="ts">/var/lib/postgresql/data · /var/www/html</text>
+  <text x="612" y="777" class="ts">/var/lib/grafana (persistencia)</text>
+
+  <rect x="880" y="722" width="280" height="70" rx="6" class="vol"/>
+  <text x="892" y="742" class="ts">bind-mounts (desde el repositorio):</text>
+  <text x="892" y="760" class="mono">./jupyter/notebooks → /home/jovyan/work</text>
+  <text x="892" y="777" class="mono">./grafana/provisioning → /etc/grafana/...</text>
+
+  <!-- leyenda -->
+  <line x1="50" y1="832" x2="90" y2="832" class="flujo" marker-end="url(#fl)"/>
+  <text x="98" y="836" class="ts">Flujo HTTP a través del proxy (frontend_net)</text>
+  <line x1="400" y1="832" x2="440" y2="832" class="flujoBD" marker-end="url(#flv)"/>
+  <text x="448" y="836" class="ts">Conexiones a PostgreSQL (backend_net)</text>
+  <text x="720" y="836" class="ts">Contenedores altos = conectados a ambas redes (eth0 + eth1)</text>
+  <text x="50" y="866" class="ts">IPs observadas en el despliegue documentado (el IPAM de Docker las asigna dinámicamente dentro de cada subred; los nombres de servicio las resuelven vía DNS 127.0.0.11).</text>
+</svg>

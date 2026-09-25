@@ -1,0 +1,8 @@
+### Interfaces de joomla (eth0/eth1 son extremos de pares veth; @ifNN = ifindex del peer en el host)
+eth0 ifindex=2 iflink=131 mac=6e:f8:da:35:b7:12
+eth1 ifindex=3 iflink=132 mac=1e:7e:39:57:65:39
+lo ifindex=1 iflink=1 mac=00:00:00:00:00:00
+### Caché ARP de joomla
+IP address       HW type     Flags       HW address            Mask     Device
+10.201.10.5      0x1         0x2         ce:88:af:0f:f5:94     *        eth0
+10.201.20.2      0x1         0x2         a6:29:d4:71:bf:74     *        eth1

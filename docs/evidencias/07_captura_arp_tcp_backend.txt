@@ -1,0 +1,24 @@
+### Cliente efímero en backend_net (caché ARP vacía) conectando a database:5432
+cliente 10.201.20.6/32:56542 -> servidor 10.201.20.2/32:5432
+### tcpdump -i br-parcial-be (ARP + SYN/FIN de TCP 5432)
+16:31:10.218772 a6:29:d4:71:bf:74 > 7a:fb:eb:32:ad:8d, ethertype ARP (0x0806), length 42: Request who-has 10.201.20.3 tell 10.201.20.2, length 28
+16:31:10.218782 7a:fb:eb:32:ad:8d > a6:29:d4:71:bf:74, ethertype ARP (0x0806), length 42: Reply 10.201.20.3 is-at 7a:fb:eb:32:ad:8d, length 28
+16:31:15.660161 1e:7e:39:57:65:39 > a6:29:d4:71:bf:74, ethertype IPv4 (0x0800), length 74: 10.201.20.5.55558 > 10.201.20.2.5432: Flags [S], seq 2468788819, win 64240, options [mss 1460,sackOK,TS val 64746148 ecr 0,nop,wscale 10], length 0
+16:31:15.660180 a6:29:d4:71:bf:74 > 1e:7e:39:57:65:39, ethertype IPv4 (0x0800), length 74: 10.201.20.2.5432 > 10.201.20.5.55558: Flags [S.], seq 2210889381, ack 2468788820, win 65160, options [mss 1460,sackOK,TS val 727660800 ecr 64746148,nop,wscale 10], length 0
+16:31:15.731124 1e:7e:39:57:65:39 > a6:29:d4:71:bf:74, ethertype IPv4 (0x0800), length 66: 10.201.20.5.55558 > 10.201.20.2.5432: Flags [F.], seq 14501, ack 39583, win 113, options [nop,nop,TS val 64746219 ecr 727660871], length 0
+16:31:15.733104 a6:29:d4:71:bf:74 > 1e:7e:39:57:65:39, ethertype IPv4 (0x0800), length 66: 10.201.20.2.5432 > 10.201.20.5.55558: Flags [F.], seq 39583, ack 14502, win 88, options [nop,nop,TS val 727660873 ecr 64746219], length 0
+16:31:17.744907 c2:fe:d8:13:82:bb > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 10.201.20.6 tell 10.201.20.6, length 28
+16:31:17.787855 c2:fe:d8:13:82:bb > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 10.201.20.2 tell 10.201.20.6, length 28
+16:31:17.787889 a6:29:d4:71:bf:74 > c2:fe:d8:13:82:bb, ethertype ARP (0x0806), length 42: Reply 10.201.20.2 is-at a6:29:d4:71:bf:74, length 28
+16:31:17.787920 c2:fe:d8:13:82:bb > a6:29:d4:71:bf:74, ethertype IPv4 (0x0800), length 74: 10.201.20.6.56542 > 10.201.20.2.5432: Flags [S], seq 3093668039, win 64240, options [mss 1460,sackOK,TS val 2796846586 ecr 0,nop,wscale 10], length 0
+16:31:17.787947 a6:29:d4:71:bf:74 > c2:fe:d8:13:82:bb, ethertype IPv4 (0x0800), length 74: 10.201.20.2.5432 > 10.201.20.6.56542: Flags [S.], seq 552233254, ack 3093668040, win 65160, options [mss 1460,sackOK,TS val 2486837108 ecr 2796846586,nop,wscale 10], length 0
+16:31:17.805421 c2:fe:d8:13:82:bb > a6:29:d4:71:bf:74, ethertype IPv4 (0x0800), length 66: 10.201.20.6.56542 > 10.201.20.2.5432: Flags [F.], seq 383, ack 723, win 63, options [nop,nop,TS val 2796846603 ecr 2486837125], length 0
+16:31:17.808032 a6:29:d4:71:bf:74 > c2:fe:d8:13:82:bb, ethertype IPv4 (0x0800), length 66: 10.201.20.2.5432 > 10.201.20.6.56542: Flags [F.], seq 723, ack 384, win 64, options [nop,nop,TS val 2486837128 ecr 2796846603], length 0
+16:31:23.018727 a6:29:d4:71:bf:74 > c2:fe:d8:13:82:bb, ethertype ARP (0x0806), length 42: Request who-has 10.201.20.6 tell 10.201.20.2, length 28
+16:31:24.042839 a6:29:d4:71:bf:74 > c2:fe:d8:13:82:bb, ethertype ARP (0x0806), length 42: Request who-has 10.201.20.6 tell 10.201.20.2, length 28
+16:31:25.066737 a6:29:d4:71:bf:74 > c2:fe:d8:13:82:bb, ethertype ARP (0x0806), length 42: Request who-has 10.201.20.6 tell 10.201.20.2, length 28
+16:31:25.778718 1e:7e:39:57:65:39 > a6:29:d4:71:bf:74, ethertype IPv4 (0x0800), length 74: 10.201.20.5.55136 > 10.201.20.2.5432: Flags [S], seq 2509382567, win 64240, options [mss 1460,sackOK,TS val 3799938666 ecr 0,nop,wscale 10], length 0
+16:31:25.778755 a6:29:d4:71:bf:74 > 1e:7e:39:57:65:39, ethertype IPv4 (0x0800), length 74: 10.201.20.2.5432 > 10.201.20.5.55136: Flags [S.], seq 3407935711, ack 2509382568, win 65160, options [mss 1460,sackOK,TS val 2492581273 ecr 3799938666,nop,wscale 10], length 0
+16:31:25.853990 1e:7e:39:57:65:39 > a6:29:d4:71:bf:74, ethertype IPv4 (0x0800), length 66: 10.201.20.5.55136 > 10.201.20.2.5432: Flags [F.], seq 14501, ack 39583, win 113, options [nop,nop,TS val 3799938742 ecr 2492581348], length 0
+16:31:25.857275 a6:29:d4:71:bf:74 > 1e:7e:39:57:65:39, ethertype IPv4 (0x0800), length 66: 10.201.20.2.5432 > 10.201.20.5.55136: Flags [F.], seq 39583, ack 14502, win 88, options [nop,nop,TS val 2492581351 ecr 3799938742], length 0
+
