@@ -1,6 +1,13 @@
 # INFORME TÉCNICO: despliegue multi-contenedor, orquestación, arquitectura y análisis del modelo OSI
 
 **Parcial 2 práctico · Comunicaciones · Ingeniería Mecatrónica**
+
+**Integrantes del grupo:**
+
+- Sara Valentina Clavijo
+- Angel David Nocobe
+- Steban Mauricio Cortes
+
 **Docente:** Ing. Andrés Julián Moreno M.Sc.
 
 > Todas las direcciones IP, MAC, puertos, capturas y tiempos de este informe son **datos reales** del despliegue documentado (Docker Desktop 29.7 sobre Windows 11, motor Linux).

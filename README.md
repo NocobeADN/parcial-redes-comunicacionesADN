@@ -2,6 +2,10 @@
 
 **Comunicaciones · Ingeniería Mecatrónica**
 
+**Integrantes:** Sara Valentina Clavijo · Angel David Nocobe · Steban Mauricio Cortes
+
+**Docente:** Ing. Andrés Julián Moreno M.Sc.
+
 Clúster de 5 contenedores orquestado con Docker Compose:
 
 | Servicio | Imagen | Rol |
